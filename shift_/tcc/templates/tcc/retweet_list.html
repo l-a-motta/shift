@@ -1,0 +1,33 @@
+{% extends 'tcc/base.html' %}
+
+{% block head %}
+	<title>Lista de Retweets - Shift</title>
+{% endblock %}
+
+{% block body %}
+	{% if retweets %}
+		<ul>
+		{% for retweet in retweets %}
+				<li>
+					<p><b>{{retweet.user.name}} / Nome: {{retweet.user.screen_name}}</b> - {{ retweet.text }}</p>
+					<p>Tweetado de {{retweet.source}}</p>
+					<p>Coordenadas {% if retweet.coordinates %}{{retweet.coordinates.coordinates}}</p>{% else %}nao detectadas</p>{% endif %}
+					<p>Linguagem detectada: {{retweet.metadata.iso_language_code}}</p>
+					<ul>
+							<p>Mais informacoes (associado ao tweet)...</p>
+							{% if retweet.place %}
+							<p>{{retweet.place.country}} - {{retweet.place.country_code}}</p>
+							<p>{{retweet.place.full_name}}, {{retweet.place.place_type}}</p>
+							{% else %}
+							<p>Sem mais informacoes</p>
+							{% endif %}
+					</ul>
+					<br>
+				</li>
+				<hr><br><br>
+		{% endfor %}
+		</ul>
+	{% else %}
+		<p>Nenhum retweet disponivel</p>
+	{% endif %}
+{% endblock %}

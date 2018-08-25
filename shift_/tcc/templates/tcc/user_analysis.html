@@ -1,0 +1,298 @@
+{% extends 'tcc/base.html' %}
+
+{% load tz %}
+
+{% block head %}
+	<title>Analise de {{query}} | Shift</title>
+	<style>	
+		body
+		{
+			font-family: verdana;
+			background-color: rgb(224,224,224, 255);
+			/*rgb(59,50,81,255)*/
+		}
+		
+		b
+		{
+			color: rgb(29,161,242,255);
+		}
+
+		div.tweetformat
+		{
+			padding: 5px;
+			
+		}
+
+		img.profilepic
+		{
+   			border-radius: 50%;
+		}
+
+		font.arroba,a:link.arroba,a:visited.arroba
+		{
+			font-family: 'Poppins', sans-serif;
+			font-size: 1.1em;
+			font-weight: 300;
+			line-height: 1.7em;
+			color: #999;
+		}
+		
+		div.sticky {
+			position: -webkit-sticky;
+			position: sticky;
+			top: 0;
+			padding: 10px;
+			font-size: 20px;
+			z-index: 97;
+		}
+	</style>
+{% endblock %}
+
+{% block chartGauge %}
+	
+	{% if  comTot >= 0 %}
+	var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Media Geral', {{comTot}}*100]
+        ]);
+
+        var options = {
+          width: 450, height: 170,
+		  greenColor: '#95c8d8', yellowColor: '#57a0d3', redColor: '#4662b4', 
+		  greenFrom: 20, greenTo: 50,
+		  yellowFrom: 50, yellowTo: 85,
+          redFrom: 85, redTo: 100,
+          minorTicks: 5
+        };
+	{% else %}
+	var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Media Geral', {{comTot}}*-100]
+        ]);
+
+        var options = {
+          width: 450, height: 250,
+		  greenColor: '#ffb2b2', yellowColor: '#ff4c4c', redColor: '#7f0000', 
+		  greenFrom: 20, greenTo: 50,
+		  yellowFrom: 50, yellowTo: 85,
+          redFrom: 85, redTo: 100,
+          minorTicks: 5
+        };
+	{% endif %}
+	
+{% endblock %}
+
+{% block chartSingleColumn %}
+
+	var data = google.visualization.arrayToDataTable([
+        ['Tipo', 'Positividade', 'Negatividade', 'Neutralidade', { role: 'annotation' } ],
+        ['Polaridade', {{posTot}}, {{negTot}}, {{neuTot}}, ''],
+      ]);
+
+      var options = {
+        isStacked: 'percent',
+          height: 200,
+		  colors: ['#57a0d3', '#ff4c4c', '#aaa'],
+          legend: {position: 'top', maxLines: 1},
+          hAxis: {
+            minValue: 0,
+            ticks: [0, .3, .6, .9, 1]
+          }
+      };
+
+{% endblock %}
+
+{% block chartMaterialColumn %}
+
+	var data = google.visualization.arrayToDataTable([
+          ['Legenda', 'Quantidade'],
+          ['Polarizado', {{count}}-{{past}}],
+          ['Nao polarizado', {{past}}]
+        ]);
+
+        var options = {
+          chart: {
+            title: 'Performance da ML',
+            subtitle: 'Separacao de tweets polarizados e dos que a ML nao pode identificar',
+			height: 500,
+			colors: [{% if comTot >= 0 %}'color: #57a0d3'{% else %}'color: #ff4c4c'{% endif %}, '#fff']
+          }
+        };
+
+{% endblock %}
+
+{% block chartTable %}
+	var data = new google.visualization.DataTable();
+    data.addColumn('number', 'Positividade');
+    data.addColumn('number', 'Negatividade');
+    data.addColumn('number', 'Neutralidade');
+	data.addColumn('number', 'Media');
+	data.addRows([
+	  {% for analy in analysis %}
+	  [{{analy.pol.pos}}, {{analy.pol.neg}}, {{analy.pol.neu}}, {{analy.pol.compound}}],
+	  {% endfor %}
+    ]);
+{% endblock %}
+
+
+{% block chartMaterialScatter %}
+
+	data.addColumn('number', 'Tweet');
+	data.addColumn('number', 'Tweet');
+
+    data.addRows([
+        {% for analy in analysis %}
+		[
+			{{analy.pol.neu}}, 
+			{{analy.pol.compound}}
+		],
+		{% endfor %}
+    ]);
+
+    var options = {
+		{% if comTot >= 0 %}colors: ['#57a0d3']{% else %}colors: ['#ff4c4c']{% endif %},
+        height: 500,
+        chart: {
+			title: 'Polaridades dos Tweets',
+			subtitle: 'no plano cartesiano'
+        },
+        hAxis: {title: 'Neutralidade'},
+        vAxis: {title: 'Polaridade'}
+    };
+
+{% endblock %}
+
+{% block chartHistogram %}
+	var data = google.visualization.arrayToDataTable([
+		['Tweet', 'Polaridade'],
+		{% for analy in analysis %}
+			['{{ analy.texto }}', {{ analy.pol.compound }}],
+		{% endfor %}
+		]);
+
+	var options = {
+		title: 'Polaridade média de cada tweet',
+		legend: { position: 'none' },
+		histogram: { bucketSize: 0.1 },
+		height: 350,
+		{% if  comTot >= 0 %}{% else %}colors: ['#ff4c4c'],{% endif %}
+	};
+{% endblock %}
+
+{% block chartGeneralHistogram %}
+	var data = google.visualization.arrayToDataTable([
+		['Positividade', 'Negatividade', 'Neutralidade'],
+		{% for analy in analysis %}
+		[{{ analy.pol.pos }}, {{ analy.pol.neg }}*-1, {{ analy.pol.neu }}],
+		{% endfor %}
+	]);
+
+	var options = {
+		title: 'Polaridade específica de cada tweet',
+		legend: { position: 'top', maxLines: 2 },
+		height: 350,
+		colors: ['#57a0d3', '#ff4c4c', '#aaa'],
+		interpolateNulls: false,
+	};
+{% endblock %}
+
+
+{% block body %}
+	{% if analysis %}
+		<center>
+		<div class="sticky">
+			<div class="card w-75">
+					<div class="tweetformat">
+						<span style="font-family: 'Poppins', sans-serif; color:#444;">Resultados para "{{query}}"</span>
+						<nav class="nav justify-content-center" style="padding:10px;">
+							<form action="{% url 'tcc:collect_user' %}" method="post">
+							 {% csrf_token %}
+								<input type="hidden" name="user_name" value="{{query}}">
+								<input type="submit" value="Detalhe desse usuario" class="btn btn-outline-secondary"/>
+							</form>
+						</nav>
+					</div>
+			</div>
+		</div>
+		
+		<br>
+		<div class="card mw-100">
+			<div class="card-body">
+				<div id="chartGauge" style="width: 100%; float:left; padding-bottom:20px;"></div>
+				<div id="chartSingleColumn" style="width: 100%; float:left; padding-bottom:20px;"></div>
+				<div id="chartMaterialScatter" style="width: 100%; float:left; padding-bottom:20px;"></div>	
+				<div id="chartMaterialColumn" style="width: 100%; height:400px; float:left;"></div>
+				<div id="chartHistogram" style="width: 100%; float:left; padding-bottom:20px;"></div>
+				<div id="chartGeneralHistogram" style="width: 100%; float:left; padding-bottom:20px;"></div>
+				<div id="chartTable" atyle="padding-bottom:20px;"></div>
+			</div>
+		</div>
+		<br>
+		
+		{% for analy in analysis %}
+			<form action="{% url 'tcc:analyze_tweet' %}" method="post" id="{{ analy.id }}">
+				{% csrf_token %}
+				<input type="hidden" name="tweet_text" value="{{analy.texto}}">
+				<input type="hidden" name="profile_img_url" value="{{analy.profile_image_url}}">
+				<input type="hidden" name="name" value="{{analy.name}}">
+				<input type="hidden" name="url" value="{{analy.url}}">
+				<input type="hidden" name="screen_name" value="{{analy.screen_name}}">
+				<input type="hidden" name="iso_language_code" value="{{analy.lang}}">
+				<input type="hidden" name="followers_count" value="{{analy.followers_count}}">
+				<input type="hidden" name="friends_count" value="{{analy.friends_count}}">
+				<input type="hidden" name="favourites_count" value="{{analy.favourites_count}}">
+				<input type="hidden" name="id" value="{{analy.id}}">
+				<input type="hidden" name="verified" value="{{analy.verified}}">
+				<a class="none" href="#" onclick="document.getElementById('{{analy.id}}').submit()">
+					<div class="card mw-100" style="background-color:{% if  analy.pol.compound > 0 %}#CCFFFF{% else %}{% if analy.pol.compound %}#ffcccc{% endif %}{% endif %};">
+						<div class="card-body">
+							<div class="tweetformat">
+								<table align="left">
+									<tbody>
+										<tr>
+											<td class="align-baseline">
+												<img align="left" src="{{analy.profile_image_url}}" class="profilepic">&nbsp;
+											</td>
+											<td class="align-baseline">					
+												<span class="geral">
+													<b style="color:{% if  analy.pol.compound > 0 %}#57a0d3{% else %}{% if analy.pol.compound < 0 %}#ff4c4c{% endif %}{% endif %};">{{analy.name}} </b>{% if analy.verified == 'True' %}<i class="material-icons" style="font-size:20px;color:#1da1f2;">check_circle</i>{% endif %}
+												</span>
+												<a class="arroba" href="#" style="color:#444;">@{{analy.screen_name}}</a>
+												<br>
+											<td>
+											<td>
+												<div id="chartGauge" style="width: 49%; float:left;"></div>
+											</td>
+										</tr>
+									<!--<tr>
+										{% timezone None %}
+										<p align="left">{{tweet.created_at|localtime|date:"d/m/Y, H:i:s"}} GMT +0</p> <!-- linha importantíssima pra saber formato de data/hora
+										{% endtimezone %}
+										<hr>
+									</tr>-->
+									</tbody>
+								</table>
+								<br><br><br><br>
+								<p style="color:#444;">{{ analy.texto }}</p>
+								<p align="left" style="color:#444;">
+									<b class="pol" style="color:{% if  analy.pol.compound > 0 %}#57a0d3{% else %}{% if analy.pol.compound < 0 %}#ff4c4c{% endif %}{% endif %};">Positividade:</b> {{analy.pol.pos}}&nbsp;&nbsp;
+									<b class="pol" style="color:{% if  analy.pol.compound > 0 %}#57a0d3{% else %}{% if analy.pol.compound < 0 %}#ff4c4c{% endif %}{% endif %};">Negatividade:</b> {{analy.pol.neg}}&nbsp;&nbsp;
+									<b class="pol" style="color:{% if  analy.pol.compound > 0 %}#57a0d3{% else %}{% if analy.pol.compound < 0 %}#ff4c4c{% endif %}{% endif %};">Neutralidade:</b> {{analy.pol.neu}}
+								</p>
+								<br>
+								<p align="left" style="color:#444;"><b class="pol" style="color:{% if  analy.pol.compound > 0 %}#57a0d3{% else %}{% if analy.pol.compound < 0 %}#ff4c4c{% endif %}{% endif %};">Media polar:</b> {{analy.pol.compound}}</p>
+								<!--<img src="{{ tweet.entities.media.media_url }}"></img>-->
+								<br>		
+								<p align="left" style="color:#444;">Linguagem detectada: {{analy.iso_language_code}}</p>
+							</div>
+						</div>
+					</div>
+				</a>
+				<br>
+			</form>
+		{% endfor %}
+		</center>
+	{% else %}
+		<p>Nenhum usuario compativel</p>
+	{% endif %}
+{% endblock %}

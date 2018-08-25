@@ -1,0 +1,198 @@
+{% extends 'tcc/base.html' %}
+
+{% block head %}
+	<title>Polarizacao unica de tweet | Shift</title>
+	<style>
+		body
+		{
+			font-family: verdana;
+			
+			{% if results.pol.compound == 0 %}
+				background-color: rgb(224,224,224, 255);
+			{% elif results.pol.compound > 0 %}
+				background-color: rgb(29,161,242,255);
+			{% else %}
+				background-color: rgb(255,61,112,255);
+			{% endif %}
+		}
+		
+		b
+		{
+			color: rgb(29,161,242,255);
+			{% if results.pol.compound < 0 %}
+				color: rgb(255,61,112,255);
+			{% endif %}
+		}
+		
+		b.pol
+		{
+			color: rgb(0,128,255,255);
+			{% if results.pol.compound < 0 %}
+				color: rgb(255,25,112,255);
+			{% endif %} 
+		}
+
+		div.tweetformat
+		{
+			padding: 5px;
+			
+		}
+
+		img.profilepic
+		{
+   			border-radius: 50%;
+		}
+
+		font.arroba,a:link.arroba,a:visited.arroba
+		{
+			color: grey;
+		}
+	</style>
+{% endblock %}
+{% block chartPie %}
+	var data = google.visualization.arrayToDataTable([
+			['Polaridade', 'Valor'],
+			['Positividade',  {{results.pol.pos}}],
+			['Negatividade',  {{results.pol.neg}}],
+			['Neutralidade',  {{results.pol.neu}}]
+        ]);
+
+        var options = {
+			title: 'Polaridade desse Tweet',
+			colors: ['#57a0d3', '#ff4c4c', '#aaa'],
+			pieHole: 0.4,
+        };
+{% endblock %}
+
+{% block chartGauge %}
+	
+	{% if  results.pol.compound >= 0 %}
+	var data = google.visualization.arrayToDataTable([
+			['Label', 'Value'],
+			['Media %', {{results.pol.compound}}*100]
+        ]);
+
+        var options = {
+			width: 450, height: 170,
+			greenColor: '#95c8d8', yellowColor: '#57a0d3', redColor: '#4662b4', 
+			greenFrom: 20, greenTo: 50,
+			yellowFrom: 50, yellowTo: 85,
+			redFrom: 85, redTo: 100,
+			minorTicks: 5
+        };
+	{% else %}
+	var data = google.visualization.arrayToDataTable([
+			['Label', 'Value'],
+			['Media %', {{results.pol.compound}}*-100]
+        ]);
+
+        var options = {
+			width: 450, height: 170,
+			greenColor: '#ffb2b2', yellowColor: '#ff4c4c', redColor: '#7f0000', 
+			greenFrom: 20, greenTo: 50,
+			yellowFrom: 50, yellowTo: 85,
+			redFrom: 85, redTo: 100,
+			minorTicks: 5
+        };
+	{% endif %}
+	
+{% endblock %}
+
+{% block chartSingleColumn %}
+
+	var data = google.visualization.arrayToDataTable([
+        ['Tipo', 'Positividade', 'Negatividade', 'Neutralidade', { role: 'annotation' } ],
+        ['Polaridade', {{results.pol.pos}}, {{results.pol.neg}}, {{results.pol.neu}}, '']
+      ]);
+
+      var options = {
+        isStacked: 'percent',
+		colors: ['#57a0d3', '#ff4c4c', '#aaa'],
+        height: 200,
+        legend: {position: 'top', maxLines: 1},
+        hAxis: {
+            minValue: 0,
+			ticks: [0, .3, .6, .9, 1]
+        }
+      };
+
+{% endblock %}
+
+{% block chartTable %}
+	var data = new google.visualization.DataTable();
+    data.addColumn('number', 'Positividade');
+    data.addColumn('number', 'Negatividade');
+    data.addColumn('number', 'Neutralidade');
+	data.addColumn('number', 'Media');
+    data.addRows([
+      [{{results.pol.pos}}, {{results.pol.neg}}, {{results.pol.neu}}, {{results.pol.compound}}]
+    ]);
+{% endblock %}
+
+{% block body %}
+	{% if results %}
+	<center>
+		<br>
+		<div class="card mw-100">
+			<div class="card-body">
+				<div class="tweetformat">
+					<nav class="nav">
+						<container align="left" width="50%">
+							<div class="row">
+								<div class="col-6 col-md-2">
+									<img align="left" src="{{results.profile_image_url}}" class="profilepic">&nbsp;
+								</div>
+								<div class="col-12 col-md-10">
+									<p align="left"><b>{{results.name}}</b>{% if results.verified == 'True' %}{{results.verified}}<i class="material-icons" style="font-size:20px;color:#1da1f2;">check_circle</i>{% endif %}<a class="arroba" href="{{results.url}}"> @{{results.screen_name}}</a></p>																		
+								</div>							
+							</div>
+						</container>
+						&nbsp;
+						<form align="right" action="{% url 'tcc:collect_user' %}" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="user_name" value="{{results.screen_name}}">
+							<input type="submit" value="Detalhes do Usuário" class="btn btn-outline-secondary btn-sm pull-right"/>
+							<button align="right" type="button" onclick="show()" class="btn btn-outline-success btn-sm pull-right">Traduzir Tweet</button>
+						</form>
+					</nav>
+					<br><br>
+                    <p align="left">{{results.texto}}</p>
+					<div id="traduzido" style="display:none;">
+						<p align="left" style="color:#28a745;">{{results.textotradbr}}</p>
+						<p align="left" ><b style="color:#28a745;">Sinonimos:</b> {{results.extras.synonyms}}</p>
+						<p align="left" ><b style="color:#3faf5f;">Confidencia na traducao:</b> {{results.extras.confidence}} de 1</p>
+					</div>
+					<script>
+						function show() {
+							var x = document.getElementById("traduzido");
+							if (x.style.display === "none") {
+								x.style.display = "block";
+							} else {
+								x.style.display = "none";
+							}
+						}
+					</script>
+					<br>
+					<p align="left"><b class="pol">Positividade:</b> {{results.pol.pos}}&nbsp;&nbsp;<b class="pol">Negatividade:</b> {{results.pol.neg}}&nbsp;&nbsp;<b class="pol">Neutralidade:</b> {{results.pol.neu}}</p>
+					<br>
+					<p align="left"><b class="pol">Media polar:</b> {{results.pol.compound}}</p>
+					<br>
+					<p align="left"><b>Linguagem detectada:</b> {{results.iso_language_code}}</p>
+					<br>
+					<p align="left"><b>Seguidores:</b> {{results.followers_count}}&nbsp;&nbsp;<b>Seguindo:</b> {{results.friends_count}}&nbsp;&nbsp;<b>Favoritos:</b> {{results.favourites_count}}</p>
+					<br>
+					<br>
+					<div id="chartSingleColumn" style="width: 100%; float:left;"></div>
+					<div id="chartPie" style="width: 49%; float:left;"></div>	
+					<div id="chartGauge" style="width: 49%; float:left;"></div>
+					<div id="chartTable"></div>
+				</div>
+			</div>
+		</div>
+		<br>
+	</center>
+	
+	{% else %}
+	<p>ERRO, NAO ENCONTRADO RESULTADO</p>
+	{% endif %}
+{% endblock %}

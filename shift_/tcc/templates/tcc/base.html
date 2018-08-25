@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+	{% load static %}
+	
+	<!-- Metas -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- Favicon - Icons -->
+    <link rel="icon" href="{% static 'tcc/images/minilogo.png' %}">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	
+	<!-- BOOTSTRAP - AJAX - JQUERY -->
+	<!-- 4.1.1 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://raw.github.com/danpalmer/jquery.complexify.js/master/jquery.complexify.js"></script>
+
+    <!-- Static CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'tcc/style.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'tcc/btop.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'tcc/scrollbar.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'tcc/snack.css' %}" />
+
+    <!-- Fonts - Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400|Roboto:300,400,500"> 
+	
+	
+	{% block head %}
+	{% endblock %}
+	
+	<!-- Graficos GOOGLE - Pie -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+		google.charts.load('current', {'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawChart);
+		function drawChart() 
+		{
+			{% block chartPie %}
+			{% endblock %}
+			
+			var chart = new google.visualization.PieChart(document.getElementById('chartPie'));
+            
+			chart.draw(data, options);
+		}
+    </script>
+
+    <!-- Graficos GOOGLE - MaterialColumn -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['bar']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        {% block chartMaterialColumn %}
+		{% endblock %}
+
+        var chart = new google.charts.Bar(document.getElementById('chartMaterialColumn'));
+
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+      }
+    </script>
+	
+	<!-- Graficos GOOGLE - SingleColumn -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+		google.charts.load('current', {'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawChart);
+		function drawChart() 
+		{
+			{% block chartSingleColumn %}
+			{% endblock %}
+            
+			var chart = new google.visualization.BarChart(document.getElementById("chartSingleColumn"));
+			chart.draw(data, options);
+		}
+    </script>
+	
+	<!-- Graficos GOOGLE - MaterialScatter -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+		google.charts.load('current', {'packages':['scatter']});
+		google.charts.setOnLoadCallback(drawChart);
+
+		function drawChart () {
+
+			var data = new google.visualization.DataTable();
+			
+			{% block chartMaterialScatter %}
+			{% endblock %}
+
+			var chart = new google.charts.Scatter(document.getElementById('chartMaterialScatter'));
+
+			chart.draw(data, google.charts.Scatter.convertOptions(options));
+      }
+    </script>
+	
+	<!-- Graficos GOOGLE - Table -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+		google.charts.load('current', {'packages':['table']});
+		google.charts.setOnLoadCallback(drawTable);
+		function drawTable() 
+		{
+			{% block chartTable %}
+			{% endblock %}
+            
+			var table = new google.visualization.Table(document.getElementById('chartTable'));
+			table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
+		}
+    </script>
+	
+	<!-- Graficos GOOGLE - Gauge -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+		google.charts.load('current', {'packages':['gauge']});
+		google.charts.setOnLoadCallback(drawChart);
+		function drawChart()
+		{
+			{% block chartGauge %}
+			{% endblock %}
+            
+			var chart = new google.visualization.Gauge(document.getElementById('chartGauge'));
+			chart.draw(data, options);
+		}
+    </script>
+	
+	<!-- Graficos GOOGLE - Histograma -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+		google.charts.load("current", {packages:["corechart"]});
+		google.charts.setOnLoadCallback(drawChart);
+		function drawChart() {
+			{% block chartHistogram %}
+			{% endblock %}
+
+			var chart = new google.visualization.Histogram(document.getElementById('chartHistogram'));
+			chart.draw(data, options);
+		}
+    </script>
+	
+	<!-- Graficos GOOGLE - Histograma Generico -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+		google.charts.load("current", {packages:["corechart"]});
+		google.charts.setOnLoadCallback(drawChart);
+		function drawChart() {
+			{% block chartGeneralHistogram %}
+			{% endblock %}
+
+			var chart = new google.visualization.Histogram(document.getElementById('chartGeneralHistogram'));
+			chart.draw(data, options);
+		}
+    </script>
+	
+</head>
+
+
+
+
+<body>
+	<div class="wrapper">
+	
+        <!-- Conteudo do sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3><a href="http://200.145.153.163/shift"><img src="{% static 'tcc/images/shift_white.png' %}" style="width:100px;"></img></a></h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="material-icons" style="font-size:20px;">home</i> <span style="position:relative;bottom:5px;">Home</span></a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu">
+                        <li>
+                            <a class="nav-link" href="{% url 'tcc:search' %}"><i class="material-icons" style="font-size:20px;">search</i> <span style="position:relative;bottom:5px;">Pesquisa</span></a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'tcc:collect_multiple_trends' %}"><i class="material-icons" style="font-size:20px;">layers</i> <span style="position:relative;bottom:5px;">Trends</span></a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="http://200.145.153.163/shift"><i class="material-icons" style="font-size:20px;">account_balance</i> <span style="position:relative;bottom:5px;">Shift</span></a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="https://www.djangoproject.com/"><i class="material-icons" style="font-size:20px;">polymer</i> <span style="position:relative;bottom:5px;">Extras</span></a>
+                </li>
+                <li>
+                    <a href="https://www.facebook.com/"><i class="material-icons" style="font-size:20px;">phone</i> <span style="position:relative;bottom:3px;">Contato</span></a>
+                </li>
+				<li>
+                    <a href="http://200.145.153.163/shift/"><i class="material-icons" style="font-size:20px;">receipt</i> <span style="position:relative;bottom:5px;">Sobre</span></a>
+                    <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="material-icons" style="font-size:20px;">apps</i> <span style="position:relative;bottom:5px;">Outros</span></a>
+                    <ul class="collapse list-unstyled" id="pageSubmenu">
+                        <li>
+                            <a href="https://www.twitter.com/"><i class="material-icons" style="font-size:20px;">question_answer</i> <span style="position:relative;bottom:5px;">Twitter</span></a>
+                        </li>
+                        <li>
+                            <a href="http://www.cti.feb.unesp.br/"><i class="material-icons" style="font-size:20px;">school</i> <span style="position:relative;bottom:5px;">CTI</span></a>
+                        </li>
+                        <li>
+                            <a href="https://www.unesp.br/"><i class="material-icons" style="font-size:20px;">local_library</i> <span style="position:relative;bottom:5px;">Unesp</span></a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="list-unstyled CTAs">
+                <li>
+                    <a href="http://200.145.153.163/shift/teste.exe" class="download">Download do projeto</a>
+                </li>
+                <li>
+                    <a href="#" onClick="snack()" class="article">Checar versoes</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Conteudo da navbar e body -->
+        <div id="content">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="navbar-btn">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fas fa-align-justify"></i>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="{% url 'tcc:search' %}">Pesquisa</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'tcc:collect_multiple_trends' %}">Trends</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="http://200.145.153.163/shift">Shift</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+			
+			<!-- Conteudo do body -->
+			{% block body %}
+			{% endblock %}
+		
+        </div>
+    </div>
+	
+	<div id="snackbar">
+		<div class="textLeft">
+			Versao do site:
+		</div>
+		<div class="textRight">
+			1.7
+		</div>
+		<div class="textLeft">
+			Versao dev:
+		</div>
+		<div class="textRight">
+			1.5.1
+		</div>
+	</div>
+	
+	<div class="progress-container">
+		<div class="progress-bar" id="myBar"></div>
+	</div>  
+	<button onclick="topFunction()" id="backtop" title="Voltar ao topo"><i class="material-icons">change_history</i></button>
+
+	<script type="text/javascript">
+		//Navbar e Sidebar
+		$(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+                $(this).toggleClass('active');
+            });
+        });
+		
+		
+		// When the user scrolls down 20px from the top of the document, show the button
+		window.onscroll = function() {scrollFunction()};
+
+		function scrollFunction() {
+			var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+			var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+			var scrolled = (winScroll / height) * 100;
+			document.getElementById("myBar").style.width = scrolled + "%";
+			
+			if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+				document.getElementById("backtop").style.display = "block";
+			} else {
+				document.getElementById("backtop").style.display = "none";
+			}
+		}
+
+		// When the user clicks on the button, scroll to the top of the document
+		function topFunction() {
+			document.body.scrollTop = 0;
+			document.documentElement.scrollTop = 0;
+		}
+		
+		//Snackbar
+		function snack() {
+			var x = document.getElementById("snackbar");
+			x.className = "show";
+			setTimeout(function(){ x.className = x.className.replace("show", ""); }, 5000);
+		}
+	</script>
+	
+</body>
+
+
+
+<script async defer	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABH5jWojsMy5cqEtqGk-F_oggRsuBH9E0&callback=initMap"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>

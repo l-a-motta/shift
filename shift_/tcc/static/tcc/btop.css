@@ -1,0 +1,19 @@
+#backtop {
+    display: none;
+    position: fixed; /* Fixo na posicao inicial */
+    bottom: 20px; /* Forca o botao no fim da pagina */
+    right: 8px; /* Força o botao a 30px da direita */
+    z-index: 99; /* Força o index z a ficar na frente de tudo */
+    border: none; /* Retira bordas */
+    outline: none; /* Retira linhas */
+    background: rgb(71,113,165,255);
+    color: white;
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 100%; /* Meio arredondado */
+    font-size: 18px;
+}
+
+#backtop:hover {
+    background-color: #999; /* Add a dark-grey background on hover */
+}

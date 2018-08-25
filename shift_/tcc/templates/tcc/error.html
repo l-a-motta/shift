@@ -1,0 +1,17 @@
+{% extends 'tcc/base.html' %}
+
+{% load static %}
+
+{% block head %}
+	<title>ERRO - Shift</title>
+{% endblock %}
+
+{% block body %}
+	<center>
+	<container>
+		<p style="font-size: 80px;"><b>Ooooooops</b></p>
+		<img style="width:35%;" src="{% static 'tcc/images/erro.gif' %}">
+		<p style="font-size: 50px;">Algo deu errado :(</p>
+	</container>
+	</center>
+{% endblock %}

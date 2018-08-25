@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link rel="icon" href="{% static 'tcc/images/minilogo.png' %}">
+
+    <!-- CSS -->   
+    <link rel="stylesheet" href="./css/style.css">     
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400|Roboto:300,400,500">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Favicon e touch icons -->
+    <link rel="shortcut icon" href="assets/ico/favicon.png">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://raw.github.com/danpalmer/jquery.complexify.js/master/jquery.complexify.js"></script>
+
+    <title>Pesquisa | Shift</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/4.1/examples/floating-labels/floating-labels.css" rel="stylesheet">
+</head>
+<body style="
+    background-image: url('https://media.giphy.com/media/BHNfhgU63qrks/source.gif');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    ">
+    
+    <div class="form-signin">
+        <form action="{% url 'tcc:loading_results' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <div class="text-center mb-4" style="padding-bottom:15px;">
+                    <a href="#"><img class="mb-4" src="https://trello-attachments.s3.amazonaws.com/5a8ab528e8c8492d0fe3a0bf/5af0b4859be601f60b3369db/f14c30e24a9f8919fefac0c598ba4b30/logodark.png" alt="Logo Shift" width="200" height="auto"></a>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <select class="btn btn-outline-secondary dropdown-toggle" style="color:white;" name="op">
+                            <option value="1">Análise bruta</option>
+                            <option value="2">Palavra-chave</option>
+							<option value="3">Usuário</option>
+                        </select>              
+                    </div>
+                    <input name="search" type="text" id="a" class="form-control" placeholder="Digite sua Pesquisa" required autofocus/>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Começar</button>
+            </div>
+        </form>
+        
+        <form action="{% url 'tcc:collect_multiple_trends' %}" class="form-signin" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <center><button class="btn btn-outline-light btn-sm" type="submit">Ver Trends</button></center>
+            </div>
+        </form>
+    </div>
+
+    
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>

@@ -1,0 +1,14 @@
+.progress-container {
+  position: fixed; /* Fixo na posicao inicial */
+  bottom: 0px; /* Forca o botao no fim da pagina */
+  right: 0px; /* Força o botao a 30px da direita */
+  width: 100%;
+  height: 12px;
+  background: #fff;
+}
+
+.progress-bar {
+  height: 12px;
+  background: rgb(71,113,165,255);
+  width: 0%;
+}

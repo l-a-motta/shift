@@ -1,0 +1,535 @@
+{% extends 'tcc/base.html' %}
+
+{% block head %}
+	<title>Detalhes de {{ user_data.name }} | Shift</title>
+	<!-- Mapa do Google precisa ser interno -->
+	<style>
+	#map {
+		height: 550px;
+		width: 100%;
+	}
+
+	body
+	{
+		font-family: verdana;
+		background-color: rgb(224,224,224, 255);
+		/*rgb(59,50,81,255)*/
+	}
+
+	b
+	{
+		color: rgb(29,161,242,255);
+	}
+
+	img.profilepic
+	{
+  	border-radius: 50%;
+	}
+
+	font.arroba,a:link.arroba,a:visited.arroba
+	{
+		color: grey;
+	}
+	</style>
+{% endblock %}
+
+{% block chart%}
+	var data = new google.visualization.DataTable();
+	data.addColumn('string', 'Topping');
+	data.addColumn('number', 'Slices');
+	data.addRows([
+		['Positivo', 3],
+		['Neutro', 1],
+		['Negativo', 1]
+	]);
+	var options = {'title':'Polaridade de {{user_data.name}}', 'width':300, 'height':200};
+{% endblock %}
+
+{% block body %}
+	{% if user_data %}
+	<!--<div class="row justify-content-center">-->
+		<div class="card mw-100">
+			<div class="card-body">
+				<table align="left" style="margin: 5px;">
+					<tbody>
+						<tr>
+							<td>
+								<img align="left" src="{{user_data.profile_image_url}}" class="profilepic">&nbsp;
+							</td>
+							<td class="align-baseline">					
+								<p><b>{{user_data.name}}</b>{% if user_data.verified %}<i class="material-icons" style="font-size:20px;color:#1da1f2;">check_circle</i>{% endif %}&nbsp;<a class="arroba" href="{{user_data.url}}">@{{user_data.screen_name}}</a></p>
+							<td>
+						</tr>
+					</tbody>
+				</table>
+					
+				<br><br><br>
+				<p style="padding: 10px;"><small class="text-muted"><b>ID:</b> {{user_data.id_str}}</small></p>
+				<p>Descrição: {% if user_data.description %}{{user_data.description}}</p>{% else %}indisponível</p>{% endif %}
+				<font class="card-text"><b>Status:</b> {% if user_data.statuses_count %}{{user_data.statuses_count}}</font>{% else %}indisponível</font>{% endif %}&nbsp;
+				<font class="card-text"><b>Seguindo:</b> {% if user_data.friends_count %}{{user_data.friends_count}}</font>{% else %}indisponível</font>{% endif %}&nbsp;
+				<font class="card-text"><b>Seguidores:</b> {% if user_data.followers_count %}{{user_data.followers_count}}</font>{% else %}indisponível</font>{% endif %}&nbsp;
+				<font class="card-text"><b>Listas:</b> {% if user_data.listed_count %}{{user_data.listed_count}}</font>{% else %}indisponível</font>{% endif %}
+									
+				<br><br><br>
+				<form action="{% url 'tcc:loading_user' %}" method="post">
+					{% csrf_token %}
+					<button class="btn btn-outline-dark btn" type="button" data-toggle="collapse" data-target="#1" aria-expanded="false" aria-controls="multiCollapseExample1">
+						Tweets favoritados
+					</button>
+					<button class="btn btn-outline-dark btn" type="button" data-toggle="collapse" data-target="#2" aria-expanded="false" aria-controls="multiCollapseExample2">
+						Últimos Tweets
+					</button>
+					<input type="hidden" name="name" value="{{user_data.screen_name}}">
+					<button class="btn btn-outline-dark btn" type="submit">
+						Polaridade de {{ user_data.screen_name }}
+					</button>
+				</form>
+				<div class="row">
+					{% if user_favourites %}
+						<div class="col">
+							<div class="collapse multi-collapse" id="1">
+								<div class="card card-body">
+									{% for favourite in user_favourites %}
+										<form action="{% url 'tcc:collect_user' %}" method="post" id="{{ favourite.user.screen_name }}">
+											{% csrf_token %}
+											<input type="hidden" name="user_name" value="{{favourite.user.screen_name}}">
+											<p><b>{{favourite.user.name}}{% if favourite.user.verified %}<i class="material-icons" style="font-size:20px;color:#1da1f2;">check_circle</i>{% endif %} </b><a class="arroba" href="#" onclick="document.getElementById('{{favourite.user.screen_name}}').submit()">@{{favourite.user.screen_name}}</a>: {{favourite.text}}</p><hr>
+										</form>
+									{% endfor %}
+								</div>
+							</div>
+						</div>
+					{% else %}
+						<div class="col">
+							<div class="collapse multi-collapse" id="1">
+								<div class="card card-body">
+									<p><b>Tweets inexistentes ou indisponíveis</p>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+				
+					{% if tweets %}
+						<div class="col">
+							<div class="collapse multi-collapse" id="2">
+								<div class="card card-body">
+									{% for tweet in tweets %}
+										<form action="{% url 'tcc:analyze_tweet' %}" method="post" id="{{ tweet.id }}">
+										{% csrf_token %}
+											<input type="hidden" name="tweet_text" value="{{tweet.full_text}}">
+											<input type="hidden" name="profile_img_url" value="{{tweet.user.profile_image_url}}">
+											<input type="hidden" name="name" value="{{tweet.user.name}}">
+											<input type="hidden" name="url" value="{{tweet.url}}">
+											<input type="hidden" name="screen_name" value="{{tweet.user.screen_name}}">
+											<input type="hidden" name="iso_language_code" value="{{tweet.user.lang}}">
+											<input type="hidden" name="followers_count" value="{{tweet.user.followers_count}}">
+											<input type="hidden" name="friends_count" value="{{tweet.user.friends_count}}">
+											<input type="hidden" name="favourites_count" value="{{tweet.user.favourites_count}}">
+											<input type="hidden" name="id" value="{{tweet.id}}">
+											<input type="hidden" name="verified" value="{{tweet.user.verified}}">
+											<a class="arroba" href="#" onclick="document.getElementById('{{tweet.id}}').submit()"><p><b>{{tweet.user.name}}{% if tweet.user.verified %}<i class="material-icons" style="font-size:20px;color:#1da1f2;">check_circle</i>{% endif %}&nbsp </b> (@{{tweet.user.screen_name}}): {{tweet.full_text}}</p></a><hr>
+										</form>
+									{% endfor %}
+								</div>
+							</div>
+						</div>
+					{% else %}
+						<div class="col">
+							<div class="collapse multi-collapse" id="2">
+								<div class="card card-body">
+									<p><b>Tweets inexistentes ou indisponíveis</p>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+				</div>
+				<div class="card-deck">
+					<div class="card">
+						<div class="card-body">
+							<p class="card-text">Localização: {% if user_data.location %}{{user_data.location}}</p>{% else %}indisponível</p>{% endif %}
+							<div id="map" class="card-img-bottom"></div>
+						</div>	
+					</div>
+					<div class="card">
+						<div class="card-body">
+									<h5 class="card-title">Informações Extras</h5>
+									<p class="card-text">Criado em: {% if user_data.created_at %}{{user_data.created_at|date:"d/m/Y, H:i:s"}}</p>{% else %}indisponível</p>{% endif %}<!--FUSO AAA-->
+									<p class="card-text">Verificado? {% if user_data.verified %}Sim</p>{% else %}Não</p>{% endif %}
+									<p class="card-text">Conta protegida? {% if user_data.protected %}Sim</p>{% else %}Não</p>{% endif %}
+									<p class="card-text">Banido em: {% if user_data.withheld_in_countries %}{{user_data.withheld_in_countries}}</p>{% else %}nenhum país</p>{% endif %}
+									<p class="card-text">Usuário manteve...</p>
+									<ul>
+										<li><p >Foto padrão?{% if user_data.default_profile_image %} Sim </p>{% else %} Não</p>{% endif %} </li>
+										<li><p >Perfil padrão? {% if user_data.default_profile %} Sim</p>{% else %} Não</p>{% endif %}</li>
+									</ul>	
+									<div class="card-img-bottom" id="chart_div"></div> <!--style="float:right; background: center no-repeat;	background-size: cover;"-->								
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	<!--</div>
+	</div>-->
+				
+		<!--<section>
+			<div class="container">
+				<div class="card">
+					<div class="row">
+						<div class="col-md-3">
+						<div class="card-block">
+							<h4 class="card-title">a</h4>
+							<p class="card-text">aaaaaa</p>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="color: #fff;	height: 20rem;	background: url('') center no-repeat;	background-size: cover;"></div>
+					</div>
+				</div>
+			</div>
+		</section>-->
+	<!--	{% if tweets %}
+			<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">
+				Últimos tweets
+			</button>
+			<div class="collapse" id="2">
+				<div class="card card-body">
+					{% for tweet in tweets %}
+						<p>{{tweet.full_text}}</p>
+					{% endfor %}
+				</div>
+			</div>
+			
+		{% else %}
+			<p>Nenhum tweet encontrado</p>
+		{% endif %}
+		
+	{% else %}
+		<p>Nenhum informacao disponivel</p>
+	{% endif %}-->
+
+
+	<script>
+		var map;
+		function initMap() 
+		{
+			var geocoder = new google.maps.Geocoder();
+
+			map = new google.maps.Map(document.getElementById('map'), {center: {lat: 0, lng: 0}, zoom: 8, styles: [
+			  {
+				"elementType": "geometry",
+				"stylers": [
+				  {
+					"color": "#1d2c4d"
+				  }
+				]
+			  },
+			  {
+				"elementType": "labels.text.fill",
+				"stylers": [
+				  {
+					"color": "#8ec3b9"
+				  }
+				]
+			  },
+			  {
+				"elementType": "labels.text.stroke",
+				"stylers": [
+				  {
+					"color": "#1a3646"
+				  }
+				]
+			  },
+			  {
+				"featureType": "administrative.country",
+				"elementType": "geometry.stroke",
+				"stylers": [
+				  {
+					"color": "#4b6878"
+				  }
+				]
+			  },
+			  {
+				"featureType": "administrative.land_parcel",
+				"elementType": "labels.text.fill",
+				"stylers": [
+				  {
+					"color": "#64779e"
+				  }
+				]
+			  },
+			  {
+				"featureType": "administrative.neighborhood",
+				"stylers": [
+				  {
+					"visibility": "off"
+				  }
+				]
+			  },
+			  {
+				"featureType": "administrative.province",
+				"elementType": "geometry.stroke",
+				"stylers": [
+				  {
+					"color": "#4b6878"
+				  }
+				]
+			  },
+			  {
+				"featureType": "landscape.man_made",
+				"elementType": "geometry.stroke",
+				"stylers": [
+				  {
+					"color": "#334e87"
+				  }
+				]
+			  },
+			  {
+				"featureType": "landscape.natural",
+				"elementType": "geometry",
+				"stylers": [
+				  {
+					"color": "#023e58"
+				  }
+				]
+			  },
+			  {
+				"featureType": "poi",
+				"elementType": "geometry",
+				"stylers": [
+				  {
+					"color": "#283d6a"
+				  }
+				]
+			  },
+			  {
+				"featureType": "poi",
+				"elementType": "labels.text.fill",
+				"stylers": [
+				  {
+					"color": "#6f9ba5"
+				  }
+				]
+			  },
+			  {
+				"featureType": "poi",
+				"elementType": "labels.text.stroke",
+				"stylers": [
+				  {
+					"color": "#1d2c4d"
+				  }
+				]
+			  },
+			  {
+				"featureType": "poi.business",
+				"stylers": [
+				  {
+					"visibility": "off"
+				  }
+				]
+			  },
+			  {
+				"featureType": "poi.park",
+				"elementType": "geometry.fill",
+				"stylers": [
+				  {
+					"color": "#023e58"
+				  }
+				]
+			  },
+			  {
+				"featureType": "poi.park",
+				"elementType": "labels.text",
+				"stylers": [
+				  {
+					"visibility": "off"
+				  }
+				]
+			  },
+			  {
+				"featureType": "poi.park",
+				"elementType": "labels.text.fill",
+				"stylers": [
+				  {
+					"color": "#3C7680"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road",
+				"elementType": "geometry",
+				"stylers": [
+				  {
+					"color": "#304a7d"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road",
+				"elementType": "labels",
+				"stylers": [
+				  {
+					"visibility": "off"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road",
+				"elementType": "labels.text.fill",
+				"stylers": [
+				  {
+					"color": "#98a5be"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road",
+				"elementType": "labels.text.stroke",
+				"stylers": [
+				  {
+					"color": "#1d2c4d"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road.arterial",
+				"elementType": "labels",
+				"stylers": [
+				  {
+					"visibility": "off"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road.highway",
+				"elementType": "geometry",
+				"stylers": [
+				  {
+					"color": "#2c6675"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road.highway",
+				"elementType": "geometry.stroke",
+				"stylers": [
+				  {
+					"color": "#255763"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road.highway",
+				"elementType": "labels",
+				"stylers": [
+				  {
+					"visibility": "off"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road.highway",
+				"elementType": "labels.text.fill",
+				"stylers": [
+				  {
+					"color": "#b0d5ce"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road.highway",
+				"elementType": "labels.text.stroke",
+				"stylers": [
+				  {
+					"color": "#023e58"
+				  }
+				]
+			  },
+			  {
+				"featureType": "road.local",
+				"stylers": [
+				  {
+					"visibility": "off"
+				  }
+				]
+			  },
+			  {
+				"featureType": "transit",
+				"elementType": "labels.text.fill",
+				"stylers": [
+				  {
+					"color": "#98a5be"
+				  }
+				]
+			  },
+			  {
+				"featureType": "transit",
+				"elementType": "labels.text.stroke",
+				"stylers": [
+				  {
+					"color": "#1d2c4d"
+				  }
+				]
+			  },
+			  {
+				"featureType": "transit.line",
+				"elementType": "geometry.fill",
+				"stylers": [
+				  {
+					"color": "#283d6a"
+				  }
+				]
+			  },
+			  {
+				"featureType": "transit.station",
+				"elementType": "geometry",
+				"stylers": [
+				  {
+					"color": "#3a4762"
+				  }
+				]
+			  },
+			  {
+				"featureType": "water",
+				"elementType": "geometry",
+				"stylers": [
+				  {
+					"color": "#0e1626"
+				  }
+				]
+			  },
+			  {
+				"featureType": "water",
+				"elementType": "labels.text",
+				"stylers": [
+				  {
+					"visibility": "off"
+				  }
+				]
+			  },
+			  {
+				"featureType": "water",
+				"elementType": "labels.text.fill",
+				"stylers": [
+				  {
+					"color": "#4e6d70"
+				  }
+				]
+			  }
+			]
+		});
+
+			geocoder.geocode({'address': "{{user_data.location}}"}, function(results, status) 
+			{
+				if (status === 'OK') 
+				{
+					map.setCenter(results[0].geometry.location);
+				} 
+				else 
+				{
+					alert('Geolocalização indisponível para análise.\n' + status);
+				}
+			});
+		}
+	</script>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'tcc/base.html' %}
+
+{% block head %}
+	<title>Trends do Twitter | Shift</title>
+	<script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+    <script type='text/javascript'>
+    google.charts.load('current', {
+		'packages': ['geochart'],
+		'mapsApiKey': 'AIzaSyDsCNedbZRI6rIpYQXvMBQ0-prfhPC2gG0'
+    });
+    google.charts.setOnLoadCallback(drawMarkersMap);
+
+    function drawMarkersMap() {
+		var data = google.visualization.arrayToDataTable([
+			['Local', 'Trending'],
+			{% for trend in trends %}
+				['{{trend.country}}', 'Em moda'],
+			{% endfor %}
+			['Antarctica', 'Nao esta em moda']
+		]);
+
+		var options = {
+			colorAxis: {colors: ['lightblue']},
+			backgroundColor: '#ffffff',
+			datalessRegionColor: '#cccccc',
+			defaultColor: '#6699ff',
+        };
+
+		var chart = new google.visualization.GeoChart(document.getElementById('chart_div'));
+		chart.draw(data, options);
+    };
+    </script>
+{% endblock %}
+
+{% block body %}
+	{% if trends %}
+		{% for trend in trends %}
+			{% if trend.name == 'Worldwide'  %}
+				<div class="card w-100">
+					<div class="card-body">
+						<h5 class="card-title">Global</h5>
+						<p class="card-text">Confira os principais tópicos em pauta no Twitter, no mundo inteiro.</p>
+						<form action="{% url 'tcc:collect_trend' %}" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="woeid" value="{{trend.woeid}}">
+							<input type="hidden" name="place_name" value="{{trend.name}}">
+							<input type="submit" class="btn btn-outline-primary" value="Ver trends globais" />
+						</form>
+						<br>
+						<h5 class="card-title">Específicas</h5>
+						<p class="card-text">Role a página para ver os assuntos das cidades ao redor do mundo.</p>
+					</div>
+				</div>
+			{% endif %}
+		{% endfor %}
+		<br><br><br>
+		<center><div id="chart_div" style="width: 100%; height: 500px;"></div></center>
+		<br><br><br>
+		
+		<div class="input-group input-group-lg">
+			<div class="input-group-prepend">
+				<span class="input-group-text" id="inputGroup-sizing-lg">Pesquisar</span>
+			</div>
+			<input type="text" class="form-control" id="pesquisa" onkeyup="filtro()">
+		</div>
+
+		<script>
+			function filtro() 
+			{
+				$('.carta').show();
+				var x = document.getElementById("pesquisa").value;
+				$('.filtro').each(function()
+				{
+					if($(this).html().toLowerCase().indexOf(x.toLowerCase()) == -1)
+					{
+						$(this).closest('.carta').css("display","none")
+					}
+				})
+			}
+			
+		</script>
+		
+		<br><br><br>
+		<div class="card-columns">
+		{% for trend in trends %}
+			{% if trend.name != 'Worldwide'  %}
+				
+				<div class="card mb-3 carta">
+					<h5 class="card-header filtro">{{trend.name}}</h5>
+					<div class="card-body">
+						<p class="card-text"><a href="{{trend.url}}">{{trend.country}} ({{trend.countryCode}})</a></p>
+						<form action="{% url 'tcc:collect_trend' %}" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="woeid" value="{{trend.woeid}}">
+							<input type="hidden" name="place_name" value="{{trend.name}}">
+							<input type="submit" class="btn btn-outline-primary" value="Ver essa trend" />
+						</form>
+					</div>
+				</div>
+			{% endif %}
+		{% endfor %}
+		</div>
+	{% else %}
+		<p>Nenhuma trend disponivel nessas coordenadas</p>
+	{% endif %}
+{% endblock %}
