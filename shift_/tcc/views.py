@@ -104,7 +104,7 @@ def collect(request):
 	if(op == "1"):	#Opcao de analise bruta
 	
 		#Setar as variaveis
-		count = 20 	#Quantos tweets vai pegar
+		count = 40 	#Quantos tweets vai pegar
 		past = 0	#Quantos tweets nao foram polarizados
 		posTot = 0	#Total positivo
 		neuTot = 0	#Total negativo
@@ -253,7 +253,7 @@ def analyze_tweet(request):
 def analyze_user(request):
 	try:
 		#Setar as variaveis que serap usadas e o count de qntos tweets vai pegar
-		count = 20
+		count = 40
 		past = 0
 		posTot = 0
 		neuTot = 0
