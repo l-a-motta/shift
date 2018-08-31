@@ -136,7 +136,7 @@
 									<img align="left" src="{{results.profile_image_url}}" class="profilepic">&nbsp;
 								</div>
 								<div class="col-12 col-md-10">
-									<p align="left"><b>{{results.name}}</b>{% if results.verified == 'True' %}{{results.verified}}<i class="material-icons" style="font-size:20px;color:#1da1f2;">check_circle</i>{% endif %}<a class="arroba" href="{{results.url}}"> @{{results.screen_name}}</a></p>																		
+									<p align="left"><b>{{results.name}}</b>{% if results.verified == 'True' %}<i class="material-icons" style="font-size:20px;color:rgb(255,61,112,255);">check_circle</i>{% endif %}<a class="arroba" href="{{results.url}}"> @{{results.screen_name}}</a></p>																		
 								</div>							
 							</div>
 						</container>
@@ -148,8 +148,8 @@
 							<button align="right" type="button" onclick="show()" class="btn btn-outline-success btn-sm pull-right">Traduzir Tweet</button>
 						</form>
 					</nav>
-					<br><br>
-                    <p align="left">{{results.texto}}</p>
+					<br>
+                    <p align="left">{{results.texto}} <a style="color:#57a0d3;" target="blank" href="{{ results.links }}">{{ results.links }}</a></p>
 					<div id="traduzido" style="display:none;">
 						<p align="left" style="color:#28a745;">{{results.textotradbr}}</p>
 						<p align="left" ><b style="color:#28a745;">Sinonimos:</b> {{results.extras.synonyms}}</p>
@@ -166,9 +166,23 @@
 						}
 					</script>
 					<br>
-					<p align="left"><b class="pol">Positividade:</b> {{results.pol.pos}}&nbsp;&nbsp;<b class="pol">Negatividade:</b> {{results.pol.neg}}&nbsp;&nbsp;<b class="pol">Neutralidade:</b> {{results.pol.neu}}</p>
+					<button type="button" class="btn btn-info" style="margin-bottom:15px;">
+						Positividade <span class="badge badge-light">{{results.pol.pos}}</span>
+						<span class="sr-only">Positividade {{results.pol.pos}}</span>
+					</button>
+					<button type="button" class="btn btn-danger" style="margin-bottom:15px;">
+						Negatividade <span class="badge badge-light">{{results.pol.neg}}</span>
+						<span class="sr-only">Negatividade {{results.pol.neg}}</span>
+					</button>
+					<button type="button" class="btn btn-secondary" style="margin-bottom:15px;">
+						Neutralidade <span class="badge badge-light">{{results.pol.neu}}</span>
+						<span class="sr-only">Neutralidade {{results.pol.neu}}</span>
+					</button>
 					<br>
-					<p align="left"><b class="pol">Media polar:</b> {{results.pol.compound}}</p>
+					<button type="button" class="btn btn-light" style="margin-bottom:15px;">
+						Media Polar <span class="badge badge-dark">{{results.pol.compound}}</span>
+						<span class="sr-only">Media Polar {{results.pol.compound}}</span>
+					</button>
 					<br>
 					<p align="left"><b>Linguagem detectada:</b> {{results.iso_language_code}}</p>
 					<br>

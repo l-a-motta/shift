@@ -1,9 +1,36 @@
 {% extends 'tcc/base.html' %}
 
 {% block head %}
-	{% for trend in trends %}<title>Trend de {{ trend.as_of }} | Shift</title>{% endfor %}
+	{% for trend in trends %}<title>Trend de {{ dict.as_of }} | Shift</title>{% endfor %}
 	<!-- Mapa do Google precisa ser interno -->
 	<style>
+	#map {
+		height: 550px;
+		width: 100%;
+	}
+
+	body
+	{
+		font-family: verdana;
+		background-color: rgb(224,224,224, 255);
+		/*rgb(59,50,81,255)*/
+	}
+
+	b
+	{
+		color: rgb(29,161,242,255);
+	}
+
+	img.profilepic
+	{
+  	border-radius: 50%;
+	}
+
+	font.arroba,a:link.arroba,a:visited.arroba
+	{
+		color: grey;
+	}
+	
 	#map {
 		height: 350px;
 		width: 100%;
@@ -12,19 +39,52 @@
 {% endblock %}
 
 {% block body %}
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="{% url 'tcc:search' %}">Pesquisa</a></li>
+			<li class="breadcrumb-item"><a href="{% url 'tcc:collect_multiple_trends' %}">Trends</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Trend - {{ query }}</li>
+		</ol>
+	</nav>
 	{% if trends %}
 		<div id="map"></div>
-		<ul>
-		{% for trend in trends %}
-			<p>No horario {{trend.as_of}}</p>
-				<li>
-					<p><b>{{trend}}</b> - {{trend.tweet_volume}}</p>
-				</li>
-				<br><br><hr><br><br>
-		{% endfor %}
-		</ul>
+		<br>
+			{% for trend in trends %}
+			
+				<a href="{{ trend.url }}" target="blank">
+					<button type="button" class="btn btn-light" style="margin:5px;">
+					  {{ trend.name }} <span class="badge badge-dark">{{ trend.tweet_volume }}</span>
+					  <span class="sr-only">Trend do Twitter</span>
+					</button>
+				</a>
+
+				<!--<div class="col-sm">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">
+								<a href="{{ trend.url }}" target="blank">
+								<button type="button" class="btn btn-light">
+								  {{ trend.name }} <span class="badge badge-dark">{{ trend.tweet_volume }}</span>
+								  <span class="sr-only">Trend do Twitter</span>
+								</button>
+							</a>
+							</h5>
+							<p class="card-text">Query: {{ trend.query }}</p>
+							<p class="card-text">Promocao: {{ trend.promoted_content }}</p>
+						</div>
+						<div class="card-footer">
+							<small class="text-muted">{{ dict.as_of }}</small>
+						</div>
+					</div>
+				</div>-->
+			{% endfor %}
 	{% else %}
-		<p>Nenhuma trend disponivel nessas coordenadas</p>
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Nenhuma tendencia associada a essa coordenada</h5>
+				<p class="card-text">{{dict.as_of}}</p>
+			</div>
+		</div>
 	{% endif %}
 	<script>
 		var map;

@@ -33,6 +33,12 @@
 {% endblock %}
 
 {% block body %}
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="{% url 'tcc:search' %}">Pesquisa</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Trends</li>
+		</ol>
+	</nav>
 	{% if trends %}
 		{% for trend in trends %}
 			{% if trend.name == 'Worldwide'  %}

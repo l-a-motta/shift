@@ -64,7 +64,10 @@
 				</table>
 					
 				<br><br><br>
-				<p style="padding: 10px;"><small class="text-muted"><b>ID:</b> {{user_data.id_str}}</small></p>
+				<button type="button" class="btn btn-info" style="margin-bottom:15px;">
+					ID <span class="badge badge-light">{{user_data.id_str}}</span>
+					<span class="sr-only">ID {{user_data.id_str}}</span>
+				</button>
 				<p>Descrição: {% if user_data.description %}{{user_data.description}}</p>{% else %}indisponível</p>{% endif %}
 				<font class="card-text"><b>Status:</b> {% if user_data.statuses_count %}{{user_data.statuses_count}}</font>{% else %}indisponível</font>{% endif %}&nbsp;
 				<font class="card-text"><b>Seguindo:</b> {% if user_data.friends_count %}{{user_data.friends_count}}</font>{% else %}indisponível</font>{% endif %}&nbsp;
@@ -74,18 +77,18 @@
 				<br><br><br>
 				<form action="{% url 'tcc:loading_user' %}" method="post">
 					{% csrf_token %}
-					<button class="btn btn-outline-dark btn" type="button" data-toggle="collapse" data-target="#1" aria-expanded="false" aria-controls="multiCollapseExample1">
+					<button style="margin-bottom:10px;" class="btn btn-outline-dark btn" type="button" data-toggle="collapse" data-target="#1" aria-expanded="false" aria-controls="multiCollapseExample1">
 						Tweets favoritados
 					</button>
-					<button class="btn btn-outline-dark btn" type="button" data-toggle="collapse" data-target="#2" aria-expanded="false" aria-controls="multiCollapseExample2">
+					<button style="margin-bottom:10px;" class="btn btn-outline-dark btn" type="button" data-toggle="collapse" data-target="#2" aria-expanded="false" aria-controls="multiCollapseExample2">
 						Últimos Tweets
 					</button>
 					<input type="hidden" name="name" value="{{user_data.screen_name}}">
-					<button class="btn btn-outline-dark btn" type="submit">
+					<button style="margin-bottom:10px;" class="btn btn-outline-dark btn" type="submit">
 						Polaridade de {{ user_data.screen_name }}
 					</button>
 				</form>
-				<div class="row">
+				<div style="margin-bottom:10px;" class="row" >
 					{% if user_favourites %}
 						<div class="col">
 							<div class="collapse multi-collapse" id="1">
