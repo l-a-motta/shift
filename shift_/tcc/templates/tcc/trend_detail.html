@@ -48,12 +48,38 @@
 	</nav>
 	{% if trends %}
 		<div id="map"></div>
+		
+		<br><br>
+
+		<div class="input-group input-group-lg">
+			<div class="input-group-prepend">
+				<span class="input-group-text" id="inputGroup-sizing-lg">Pesquisar</span>
+			</div>
+			<input type="text" class="form-control" id="pesquisa" onkeyup="filtro()">
+		</div>
+
+		<script>
+			function filtro() 
+			{
+				$('.carta').show();
+				var x = document.getElementById("pesquisa").value;
+				$('.filtro').each(function()
+				{
+					if($(this).html().toLowerCase().indexOf(x.toLowerCase()) == -1)
+					{
+						$(this).closest('.carta').css("display","none")
+					}
+				})
+			}
+			
+		</script>
+
 		<br>
 			{% for trend in trends %}
 			
 				<a href="{{ trend.url }}" target="blank">
-					<button type="button" class="btn btn-light" style="margin:5px;">
-					  {{ trend.name }} <span class="badge badge-dark">{{ trend.tweet_volume }}</span>
+					<button type="button" class="btn btn-light carta" style="margin:5px;">
+					  <span class="filtro">{{ trend.name }}</span> <span class="badge badge-dark">{{ trend.tweet_volume }}</span>
 					  <span class="sr-only">Trend do Twitter</span>
 					</button>
 				</a>
