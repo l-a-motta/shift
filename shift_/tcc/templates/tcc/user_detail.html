@@ -9,6 +9,18 @@
 		width: 100%;
 	}
 
+	.mapboxgl-popup {
+		max-width: 400px;
+		font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	}
+
+	#menu {
+		position: absolute;
+		background: #fff;
+		padding: 10px;
+		font-family: 'Open Sans', sans-serif;
+	}
+
 	body
 	{
 		font-family: verdana;
@@ -30,19 +42,12 @@
 	{
 		color: grey;
 	}
-	</style>
-{% endblock %}
 
-{% block chart%}
-	var data = new google.visualization.DataTable();
-	data.addColumn('string', 'Topping');
-	data.addColumn('number', 'Slices');
-	data.addRows([
-		['Positivo', 3],
-		['Neutro', 1],
-		['Negativo', 1]
-	]);
-	var options = {'title':'Polaridade de {{user_data.name}}', 'width':300, 'height':200};
+	.normal
+	{
+		    font-weight: normal;
+	}
+	</style>
 {% endblock %}
 
 {% block body %}
@@ -56,15 +61,15 @@
 							<td>
 								<img align="left" src="{{user_data.profile_image_url}}" class="profilepic">&nbsp;
 							</td>
-							<td class="align-baseline">					
-								<p><b>{{user_data.name}}</b>{% if user_data.verified %}<i class="material-icons" style="font-size:20px;color:#1da1f2;">check_circle</i>{% endif %}&nbsp;<a class="arroba" href="{{user_data.url}}">@{{user_data.screen_name}}</a></p>
+							<td class="align-baseline">
+								<p><b>{{user_data.name}}</b>{% if user_data.verified %}<i class="material-icons" style="font-size:20px;color:#1da1f2;">check_circle</i>{% endif %}&nbsp;<a class="arroba" href="#">@{{user_data.screen_name}}</a></p>
 							<td>
 						</tr>
 					</tbody>
 				</table>
-					
+
 				<br><br><br>
-				<button type="button" class="btn btn-info" style="margin-bottom:15px;">
+				<button type="button" class="btn btn-info" style="margin-bottom:15px;background-color:#1DA1F2;">
 					ID <span class="badge badge-light">{{user_data.id_str}}</span>
 					<span class="sr-only">ID {{user_data.id_str}}</span>
 				</button>
@@ -73,7 +78,7 @@
 				<font class="card-text"><b>Seguindo:</b> {% if user_data.friends_count %}{{user_data.friends_count}}</font>{% else %}indisponível</font>{% endif %}&nbsp;
 				<font class="card-text"><b>Seguidores:</b> {% if user_data.followers_count %}{{user_data.followers_count}}</font>{% else %}indisponível</font>{% endif %}&nbsp;
 				<font class="card-text"><b>Listas:</b> {% if user_data.listed_count %}{{user_data.listed_count}}</font>{% else %}indisponível</font>{% endif %}
-									
+
 				<br><br><br>
 				<form action="{% url 'tcc:loading_user' %}" method="post">
 					{% csrf_token %}
@@ -112,7 +117,7 @@
 							</div>
 						</div>
 					{% endif %}
-				
+
 					{% if tweets %}
 						<div class="col">
 							<div class="collapse multi-collapse" id="2">
@@ -152,7 +157,19 @@
 						<div class="card-body">
 							<p class="card-text">Localização: {% if user_data.location %}{{user_data.location}}</p>{% else %}indisponível</p>{% endif %}
 							<div id="map" class="card-img-bottom"></div>
-						</div>	
+							<div id='menu'>
+								<input id='streets' type='radio' name='rtoggle' value='streets'>
+								<label class="normal" for='streets'>Ruas</label>
+								<input id='bright' type='radio' name='rtoggle' value='bright'>
+								<label class="normal" for='bright'>Brilhante</label>
+								<input id='light' type='radio' name='rtoggle' value='light'>
+								<label class="normal" for='light'>Claro</label>
+								<input id='dark' type='radio' name='rtoggle' value='dark'>
+								<label class="normal" for='dark'>Escuro</label>
+								<input id='satellite' type='radio' name='rtoggle' value='satellite'>
+								<label class="normal" for='satellite'>Satelite</label>
+							</div>
+						</div>
 					</div>
 					<div class="card">
 						<div class="card-body">
@@ -165,8 +182,8 @@
 									<ul>
 										<li><p >Foto padrão?{% if user_data.default_profile_image %} Sim </p>{% else %} Não</p>{% endif %} </li>
 										<li><p >Perfil padrão? {% if user_data.default_profile %} Sim</p>{% else %} Não</p>{% endif %}</li>
-									</ul>	
-									<div class="card-img-bottom" id="chart_div"></div> <!--style="float:right; background: center no-repeat;	background-size: cover;"-->								
+									</ul>
+									<div class="card-img-bottom" id="chart_div"></div> <!--style="float:right; background: center no-repeat;	background-size: cover;"-->
 						</div>
 					</div>
 				</div>
@@ -174,7 +191,7 @@
 		</div>
 	<!--</div>
 	</div>-->
-				
+
 		<!--<section>
 			<div class="container">
 				<div class="card">
@@ -202,19 +219,87 @@
 					{% endfor %}
 				</div>
 			</div>
-			
+
 		{% else %}
 			<p>Nenhum tweet encontrado</p>
 		{% endif %}
-		
+
 	{% else %}
 		<p>Nenhum informacao disponivel</p>
 	{% endif %}-->
 
 
 	<script>
-		var map;
-		function initMap() 
+		mapboxgl.accessToken = 'pk.eyJ1IjoibGFtb3R0YSIsImEiOiJjam1hdnJlaTIwcnh1M3Bqb2JzZjc5cnhvIn0.w986x6WriEojUaBUGQtMig';
+
+		var map = new mapboxgl.Map({
+			container: 'map',
+			style: 'mapbox://styles/mapbox/streets-v9',
+			center: [{{ long }}, {{ lat }}], //long , lat
+			zoom: 11.15
+		});
+
+		// Add zoom and rotation controls to the map.
+		map.addControl(new mapboxgl.NavigationControl());
+
+		//Add options for style
+		var layerList = document.getElementById('menu');
+		var inputs = layerList.getElementsByTagName('input');
+
+		function switchLayer(layer) {
+			var layerId = layer.target.id;
+			map.setStyle('mapbox://styles/mapbox/' + layerId + '-v9');
+		}
+
+		for (var i = 0; i < inputs.length; i++) {
+			inputs[i].onclick = switchLayer;
+		}
+
+		// The 'building' layer in the mapbox-streets vector source contains building-height
+		// data from OpenStreetMap.
+		map.on('load', function() {
+			// Insert the layer beneath any symbol layer.
+			var layers = map.getStyle().layers;
+
+			var labelLayerId;
+			for (var i = 0; i < layers.length; i++) {
+				if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+					labelLayerId = layers[i].id;
+					break;
+				}
+			}
+
+			map.addLayer({
+				'id': '3d-buildings',
+				'source': 'composite',
+				'source-layer': 'building',
+				'filter': ['==', 'extrude', 'true'],
+				'type': 'fill-extrusion',
+				'minzoom': 15,
+				'paint': {
+					'fill-extrusion-color': '#aaa',
+
+					// use an 'interpolate' expression to add a smooth transition effect to the
+					// buildings as the user zooms in
+					'fill-extrusion-height': [
+						"interpolate", ["linear"], ["zoom"],
+						15, 0,
+						15.05, ["get", "height"]
+					],
+					'fill-extrusion-base': [
+						"interpolate", ["linear"], ["zoom"],
+						15, 0,
+						15.05, ["get", "min_height"]
+					],
+					'fill-extrusion-opacity': .6
+				}
+			}, labelLayerId);
+		});
+	</script>
+
+	<script>
+		/*var map;
+		function initMap()
 		{
 			var geocoder = new google.maps.Geocoder();
 
@@ -522,17 +607,17 @@
 			]
 		});
 
-			geocoder.geocode({'address': "{{user_data.location}}"}, function(results, status) 
+			geocoder.geocode({'address': "{{user_data.location}}"}, function(results, status)
 			{
-				if (status === 'OK') 
+				if (status === 'OK')
 				{
 					map.setCenter(results[0].geometry.location);
-				} 
-				else 
+				}
+				else
 				{
 					alert('Geolocalização indisponível para análise.\n' + status);
 				}
 			});
-		}
+		}*/
 	</script>
 {% endblock %}

@@ -8,7 +8,7 @@
 			font-family: verdana;
 			background-color: rgb(224,224,224, 255);
 		}
-		
+
 		b
 		{
 			color: rgb(29,161,242,255);
@@ -16,19 +16,19 @@
 				color: rgb(255,61,112,255);
 			{% endif %}
 		}
-		
+
 		b.pol
 		{
 			color: rgb(0,128,255,255);
 			{% if results.pol.compound < 0 %}
 				color: rgb(255,25,112,255);
-			{% endif %} 
+			{% endif %}
 		}
 
 		div.tweetformat
 		{
 			padding: 5px;
-			
+
 		}
 
 		img.profilepic
@@ -58,7 +58,7 @@
 {% endblock %}
 
 {% block chartGauge %}
-	
+
 	{% if  results.pol.compound >= 0 %}
 	var data = google.visualization.arrayToDataTable([
 			['Label', 'Value'],
@@ -67,7 +67,7 @@
 
         var options = {
 			width: 450, height: 170,
-			greenColor: '#95c8d8', yellowColor: '#57a0d3', redColor: '#4662b4', 
+			greenColor: '#95c8d8', yellowColor: '#57a0d3', redColor: '#4662b4',
 			greenFrom: 20, greenTo: 50,
 			yellowFrom: 50, yellowTo: 85,
 			redFrom: 85, redTo: 100,
@@ -81,14 +81,14 @@
 
         var options = {
 			width: 450, height: 170,
-			greenColor: '#ffb2b2', yellowColor: '#ff4c4c', redColor: '#7f0000', 
+			greenColor: '#ffb2b2', yellowColor: '#ff4c4c', redColor: '#7f0000',
 			greenFrom: 20, greenTo: 50,
 			yellowFrom: 50, yellowTo: 85,
 			redFrom: 85, redTo: 100,
 			minorTicks: 5
         };
 	{% endif %}
-	
+
 {% endblock %}
 
 {% block chartSingleColumn %}
@@ -129,31 +129,41 @@
 		<div class="card mw-100">
 			<div class="card-body">
 				<div class="tweetformat">
-					<nav class="nav">
-						<container align="left" width="50%">
-							<div class="row">
-								<div class="col-6 col-md-2">
-									<img align="left" src="{{results.profile_image_url}}" class="profilepic">&nbsp;
-								</div>
-								<div class="col-12 col-md-10">
-									<p align="left"><b>{{results.name}}</b>{% if results.verified == 'True' %}<i class="material-icons" style="font-size:20px;color:rgb(255,61,112,255);">check_circle</i>{% endif %}<a class="arroba" href="{{results.url}}"> @{{results.screen_name}}</a></p>																		
-								</div>							
-							</div>
+					<div class="row" style="width:100%;">
+						<div class="col mb-6">
+						<container align="left">
+							<table class="table-responsive" align="left" >
+								<tbody>
+									<tr>
+										<td>
+											<img align="left" src="{{results.profile_image_url}}" class="profilepic">
+										</td>
+										<td class="align-baseline">
+											<p><b>{{results.name}}</b>{% if results.verified == 'True' %}<i class="material-icons" style="font-size:20px;color:{% if results.pol.compound >= 0 %} #1da1f2; {% else %} rgb(255,61,112,255) {% endif %};">check_circle</i>{% endif %}&nbsp;<a class="arroba" href="#">@{{results.screen_name}}</a></p>
+										<td>
+									</tr>
+								</tbody>
+							</table>
 						</container>
+						</div>
 						&nbsp;
+						<div class="col mb-6">
 						<form align="right" action="{% url 'tcc:collect_user' %}" method="post">
 							{% csrf_token %}
 							<input type="hidden" name="user_name" value="{{results.screen_name}}">
-							<input type="submit" value="Detalhes do Usuário" class="btn btn-outline-secondary btn-sm pull-right"/>
-							<button align="right" type="button" onclick="show()" class="btn btn-outline-success btn-sm pull-right">Traduzir Tweet</button>
+							<input type="submit" value="Detalhes do Usuário" class="btn btn-outline-secondary btn-sm btn pull-right"/>
+							<button align="right" type="button" onclick="show()" class="btn btn-outline-success btn-sm btn pull-right">Traduzir Tweet</button>
 						</form>
-					</nav>
+						</div>
+					</div>
 					<br>
                     <p align="left">{{results.texto}} <a style="color:#57a0d3;" target="blank" href="{{ results.links }}">{{ results.links }}</a></p>
 					<div id="traduzido" style="display:none;">
 						<p align="left" style="color:#28a745;">{{results.textotradbr}}</p>
-						<p align="left" ><b style="color:#28a745;">Sinonimos:</b> {{results.extras.synonyms}}</p>
-						<p align="left" ><b style="color:#3faf5f;">Confidencia na traducao:</b> {{results.extras.confidence}} de 1</p>
+						<p align="left" style="color:#28a745;">{{results.textotrad}}</p>
+						<p align="left" style="color:#28a745;"><b style="color:#28a745;">Codigo:</b> {{results.extras}}</p>
+						<!--<p align="left" ><b style="color:#28a745;">Sinonimos:</b> {{results.extras.synonyms}}</p>
+						<p align="left" ><b style="color:#3faf5f;">Confidencia na traducao:</b> {{results.extras.confidence}} de 1</p>-->
 					</div>
 					<script>
 						function show() {
@@ -190,7 +200,7 @@
 					<br>
 					<br>
 					<div id="chartSingleColumn" style="width: 100%; float:left;"></div>
-					<div id="chartPie" style="width: 49%; float:left;"></div>	
+					<div id="chartPie" style="width: 49%; float:left;"></div>
 					<div id="chartGauge" style="width: 49%; float:left;"></div>
 					<div id="chartTable"></div>
 				</div>
@@ -198,8 +208,8 @@
 		</div>
 		<br>
 	</center>
-	
+
 	{% else %}
-	<p>ERRO, NAO ENCONTRADO RESULTADO</p>
+	<p><b>! AVISO !</b> - NAO ENCONTRADO RESULTADO</p>
 	{% endif %}
 {% endblock %}

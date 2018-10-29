@@ -4,14 +4,14 @@
 
 {% block head %}
 	<title>Analise de {{query}} | Shift</title>
-	<style>	
+	<style>
 		body
 		{
 			font-family: verdana;
 			background-color: rgb(224,224,224, 255);
 			/*rgb(59,50,81,255)*/
 		}
-		
+
 		b
 		{
 			color: rgb(29,161,242,255);
@@ -20,7 +20,7 @@
 		div.tweetformat
 		{
 			padding: 5px;
-			
+
 		}
 
 		img.profilepic
@@ -36,7 +36,7 @@
 			line-height: 1.7em;
 			color: #999;
 		}
-		
+
 		div.sticky {
 			position: -webkit-sticky;
 			position: sticky;
@@ -49,7 +49,7 @@
 {% endblock %}
 
 {% block chartGauge %}
-	
+
 	{% if  comTot >= 0 %}
 	var data = google.visualization.arrayToDataTable([
           ['Label', 'Value'],
@@ -58,7 +58,7 @@
 
         var options = {
           width: 450, height: 170,
-		  greenColor: '#95c8d8', yellowColor: '#57a0d3', redColor: '#4662b4', 
+		  greenColor: '#95c8d8', yellowColor: '#57a0d3', redColor: '#4662b4',
 		  greenFrom: 20, greenTo: 50,
 		  yellowFrom: 50, yellowTo: 85,
           redFrom: 85, redTo: 100,
@@ -72,14 +72,14 @@
 
         var options = {
           width: 450, height: 250,
-		  greenColor: '#ffb2b2', yellowColor: '#ff4c4c', redColor: '#7f0000', 
+		  greenColor: '#ffb2b2', yellowColor: '#ff4c4c', redColor: '#7f0000',
 		  greenFrom: 20, greenTo: 50,
 		  yellowFrom: 50, yellowTo: 85,
           redFrom: 85, redTo: 100,
           minorTicks: 5
         };
 	{% endif %}
-	
+
 {% endblock %}
 
 {% block chartSingleColumn %}
@@ -106,7 +106,7 @@
 
 	var data = google.visualization.arrayToDataTable([
           ['Legenda', 'Quantidade'],
-          ['Polarizado', {{count}}-{{past}}],
+          ['Polarizado', {{count}}],
           ['Nao polarizado', {{past}}]
         ]);
 
@@ -143,7 +143,7 @@
     data.addRows([
         {% for analy in analysis %}
 		[
-			{{analy.pol.neu}}, 
+			{{analy.pol.neu}},
 			{{analy.pol.compound}}
 		],
 		{% endfor %}
@@ -214,13 +214,13 @@
 					</div>
 			</div>
 		</div>
-		
+
 		<br>
 		<div class="card mw-100">
 			<div class="card-body">
 				<div id="chartGauge" style="width: 100%; float:left; padding-bottom:20px;"></div>
 				<div id="chartSingleColumn" style="width: 100%; float:left; padding-bottom:20px;"></div>
-				<div id="chartMaterialScatter" style="width: 100%; float:left; padding-bottom:20px;"></div>	
+				<div id="chartMaterialScatter" style="width: 100%; float:left; padding-bottom:20px;"></div>
 				<div id="chartMaterialColumn" style="width: 100%; height:400px; float:left;"></div>
 				<div id="chartHistogram" style="width: 100%; float:left; padding-bottom:20px;"></div>
 				<div id="chartGeneralHistogram" style="width: 100%; float:left; padding-bottom:20px;"></div>
@@ -228,7 +228,7 @@
 			</div>
 		</div>
 		<br>
-		
+
 		{% for analy in analysis %}
 			<form action="{% url 'tcc:analyze_tweet' %}" method="post" id="{{ analy.id }}">
 				{% csrf_token %}
@@ -253,7 +253,7 @@
 											<td class="align-baseline">
 												<img align="left" src="{{analy.profile_image_url}}" class="profilepic">&nbsp;
 											</td>
-											<td class="align-baseline">					
+											<td class="align-baseline">
 												<span class="geral">
 													<b style="color:{% if  analy.pol.compound > 0 %}#57a0d3{% else %}{% if analy.pol.compound < 0 %}#ff4c4c{% endif %}{% endif %};">{{analy.name}} </b>{% if analy.verified == 'True' %}<i class="material-icons" style="font-size:20px;color:#1da1f2;">check_circle</i>{% endif %}
 												</span>
@@ -282,7 +282,7 @@
 								<br>
 								<p align="left" style="color:#444;"><b class="pol" style="color:{% if  analy.pol.compound > 0 %}#57a0d3{% else %}{% if analy.pol.compound < 0 %}#ff4c4c{% endif %}{% endif %};">Media polar:</b> {{analy.pol.compound}}</p>
 								<!--<img src="{{ tweet.entities.media.media_url }}"></img>-->
-								<br>		
+								<br>
 								<p align="left" style="color:#444;">Linguagem detectada: {{analy.iso_language_code}}</p>
 							</div>
 						</div>

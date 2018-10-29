@@ -25,7 +25,7 @@ SECRET_KEY = '+3)4pdj=b=ob4((p74(=dde3img4s&9!2cvn*vfxznri+t-gxf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
